@@ -4,6 +4,7 @@
   "author": "Pranay Prakash <pranay.gp@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "lodash": "^4.17.4",
     "next": "^1.2.3",
     "next-redux-wrapper": "^1.0.0",
     "react-baduk": "^1.1.2",
