@@ -1,7 +1,6 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "main": "index.js",
   "author": "Pranay Prakash <pranay.gp@gmail.com>",
   "license": "MIT",
   "dependencies": {
@@ -13,6 +12,7 @@
     "redux-thunk": "^2.2.0",
     "redux-undo": "^0.6.1"
   },
+  "alias": "go.aztec.website",
   "scripts": {
     "dev": "next",
     "build": "next build",
