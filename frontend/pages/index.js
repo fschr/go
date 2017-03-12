@@ -37,7 +37,7 @@ class Index extends Component {
       if(data.sender !== 'client'){
         switch(data.Action) {
           case 'CURRENT_STATE':
-            const serverData = JSON.parse(data.data)
+            const serverData = JSON.parse(data.Data)
             this.props.dispatch(setPieces(serverData.Pieces, "black"))
             break;
           case 'INVALID_MOVE':
