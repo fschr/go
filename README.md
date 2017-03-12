@@ -1,6 +1,8 @@
 # Go
 
-## To setup the frontend
+## Installation
+
+### Frontend
 
 ``` bash
 npm install
@@ -13,4 +15,10 @@ or, for a production ready optimized version:
 npm install
 npm run build
 npm start
+```
+
+### Backend
+
+```bash
+go get github.com/fschr/go
 ```
