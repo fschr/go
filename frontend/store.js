@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux'
-import undoable from 'redux-undo';
+import undoable, { includeAction, excludeAction } from 'redux-undo';
 import thunkMiddleware from 'redux-thunk'
 
 function switchTurn(currentPlayer) {
@@ -53,9 +53,11 @@ export const profileReducer = (state = {
 }
 
 export const reducer = combineReducers({
-  board: undoable(boardReducer),
+  board: undoable(boardReducer, { filter: includeAction('PLACE') }),
   profile: profileReducer
 })
+
+
 
 export const initStore = (initialState) => {
   return createStore(reducer, initialState, applyMiddleware(thunkMiddleware))
