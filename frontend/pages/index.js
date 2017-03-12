@@ -7,6 +7,8 @@ import { connect } from 'react-redux'
 import { placePiece, setPieces } from '../actions'
 import { ActionCreators } from 'redux-undo';
 
+import _ from 'lodash'
+
 class Index extends Component {
   constructor(){
     super()
@@ -38,7 +40,7 @@ class Index extends Component {
         switch(data.Action) {
           case 'CURRENT_STATE':
             const serverData = JSON.parse(data.Data)
-            this.props.dispatch(setPieces(serverData.Pieces, "black"))
+            this.props.dispatch(setPieces(_.mapKeys(serverData.Pieces, _.capitalize), "black"))
             break;
           case 'INVALID_MOVE':
             this.props.dispatch(ActionCreators.undo())
