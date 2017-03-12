@@ -8,9 +8,9 @@ export function placePiece(x, y, color, ws) {
     })
 
     ws.send(JSON.stringify({
-      action: 'MOVE',
-      sender: 'client',
-      data: {
+      Action: 'MOVE',
+      Sender: 'client',
+      Data: {
         x,
         y,
         color
