@@ -57,7 +57,7 @@ class Index extends Component {
   }
 
   clickEmptyTile(x, y) {
-    if(this.props.profile.color == this.props.board.present.currentTurn)
+    if(this.props.profile.color === this.props.board.present.currentTurn)
       this.props.dispatch(placePiece(x, y, this.props.board.present.currentTurn, this._ws))
   }
 
