@@ -14,7 +14,11 @@ const (
 	BadRequestErr = "400: malformed message"
 )
 
-var upgrader = websocket.Upgrader{}
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
 
 type Server struct {
 	state []engine.Board
@@ -43,7 +47,7 @@ func (s *Server) Run() {
 			err = json.Unmarshal(msgBytes, &m)
 			if err != nil {
 				log.WithFields(log.Fields{
-					"msgBytes": msgBytes,
+					"msgBytes": string(msgBytes),
 				}).Warn(err)
 				err = conn.WriteMessage(msgType, ([]byte)(BadRequestErr))
 				if err != nil {
@@ -52,11 +56,14 @@ func (s *Server) Run() {
 				}
 				continue
 			}
-			lastIndx := 0
+			log.WithFields(log.Fields{
+				"m": m,
+			}).Info("received message")
+			var lastBoard *engine.Board = nil
 			if len(s.state) > 0 {
-				lastIndx = len(s.state) - 1
+				lastBoard = &s.state[len(s.state) - 1]
 			}
-			newState, retMsg := engine.Reduce(&s.state[lastIndx], &m)
+			newState, retMsg := engine.Reduce(lastBoard, &m)
 			s.state = append(s.state, *newState)
 			retStr, err := json.Marshal(retMsg)
 			if err != nil {

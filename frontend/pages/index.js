@@ -23,7 +23,7 @@ class Index extends Component {
   }
 
   componentDidMount() {
-    this._ws = new WebSocket('wss://echo.websocket.org')
+    this._ws = new WebSocket('ws://localhost:3001/websocket/v1')
 
     this._ws.addEventListener('open', e => {
       this._ws.send(JSON.stringify({
