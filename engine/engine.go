@@ -8,47 +8,43 @@ import (
 
 type position uint32
 
-type color uint32
+type color string
 const (
-	black color = iota
-	white
+	black color = "black"
+	white color = "white"
 )
 
-type piece struct {
-	x     position
-	y     position
-	color color
+type Piece struct {
+	X     position
+	Y     position
+	Color color
 }
 
 type Board struct {
-	pieces []piece
+	Pieces []Piece
 }
 
 type actionType string
-type sender uint32
+
+type sender string
 const (
-	client sender = iota
-	server
+	client sender = "client"
+	server sender = "server"
 )
 
-var strToSender = map[string]sender{
-	"client": client,
-	"server": server,
-}
-
 type Message struct {
-	action     actionType // action type
-	sender     sender     // who sent the message
-	data       string     // JSON string
+	Action     actionType // action type
+	Sender     sender     // who sent the message
+	Data       string     // JSON string
 }
 
 func copyBoard(b *Board) *Board {
-	newPieces := make([]piece, len(b.pieces))
-	copy(newPieces, b.pieces)
-	return &Board{pieces: newPieces}
+	newPieces := make([]Piece, len(b.Pieces))
+	copy(newPieces, b.Pieces)
+	return &Board{Pieces: newPieces}
 }
 
-func isValidMove(b *Board, p piece) bool {
+func isValidMove(b *Board, p Piece) bool {
 	return true
 }
 
@@ -58,53 +54,57 @@ func isValidMove(b *Board, p piece) bool {
 // without the place is returned
 // `moveSuccessful` specifies whether the given
 // piece was placed
-func move(b *Board, p piece) (newBoard *Board, moveSuccessful bool) {
+func move(b *Board, p Piece) (newBoard *Board, moveSuccessful bool) {
 	newBoard = copyBoard(b)
 	if isValidMove(newBoard, p) {
-		newBoard.pieces = append(newBoard.pieces, p)
+		newBoard.Pieces = append(newBoard.Pieces, p)
 		moveSuccessful = true
 	}
 	return newBoard, moveSuccessful
 }
 
 func Reduce(b *Board, m *Message) (newBoard *Board, retMsg *Message) {
-	retMsg = &Message{action: "CURRENT_STATE", sender: server, data: ""}
-	switch m.action {
+
+	retMsg = &Message{Action: "CURRENT_STATE", Sender: server, Data: ""}
+
+	if b == nil {
+		b = &Board{Pieces: make([]Piece, 0)}
+	}
+
+	switch m.Action {
 	case "GET_CURRENT_STATE":
 		newBoard = copyBoard(b)
-		return newBoard, retMsg
 	case "MOVE":
-		var p piece
-		err := json.Unmarshal(([]byte)(m.data), &p)
+		var p Piece
+		err := json.Unmarshal(([]byte)(m.Data), &p)
 		if err != nil {
 			log.WithFields(log.Fields{
-				"data": m.data,
+				"data": m.Data,
 			}).Warn(err)
-			retMsg.action = "INVALID_DATA"
-			retMsg.data = "error: could not deserialize message data as a piece"
+			retMsg.Action = "INVALID_DATA"
+			retMsg.Data = "error: could not deserialize message data as a piece"
 			return copyBoard(b), retMsg
 		}
-		newBoard, moveOk := move(b, p)
-		stateJSON, err := json.Marshal(newBoard)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"newBoard": newBoard,
-			}).Fatal(err)
+		var moveOk bool
+		newBoard, moveOk = move(b, p)
+		if !moveOk {
+			retMsg.Action = "INVALID_MOVE"
 		}
-		if moveOk {
-			retMsg.action = "INVALID_MOVE"
-		}
-		retMsg.data = string(stateJSON)
-		return newBoard, retMsg
 	default:
-		retMsg.action = "INVALID_ACTION"
-		retMsg.data = "error: invalid action type"
+		retMsg.Action = "INVALID_ACTION"
+		retMsg.Data = "error: invalid action type"
 		log.WithFields(log.Fields{
 			"board": b,
 			"message": m,
 		}).Warn("invalid action type")
-		return
+		newBoard = copyBoard(b)
 	}
-	log.Fatal("engine.Reduce: this should never happen")
-	return
+	stateJSON, err := json.Marshal(*newBoard)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"newBoard": newBoard,
+		}).Fatal(err)
+	}
+	retMsg.Data = string(stateJSON)
+	return newBoard, retMsg
 }

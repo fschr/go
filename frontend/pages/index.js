@@ -7,6 +7,8 @@ import { connect } from 'react-redux'
 import { placePiece, setPieces } from '../actions'
 import { ActionCreators } from 'redux-undo';
 
+import _ from 'lodash'
+
 class Index extends Component {
   constructor(){
     super()
@@ -21,7 +23,7 @@ class Index extends Component {
   }
 
   componentDidMount() {
-    this._ws = new WebSocket('wss://echo.websocket.org')
+    this._ws = new WebSocket('ws://localhost:3001/websocket/v1')
 
     this._ws.addEventListener('open', e => {
       this._ws.send(JSON.stringify({
@@ -38,7 +40,7 @@ class Index extends Component {
         switch(data.Action) {
           case 'CURRENT_STATE':
             const serverData = JSON.parse(data.Data)
-            this.props.dispatch(setPieces(serverData.Pieces, "black"))
+            this.props.dispatch(setPieces(serverData.Pieces.map(piece => _.mapKeys(piece, (val, key) => _.lowerCase(key))), "black"))
             break;
           case 'INVALID_MOVE':
             this.props.dispatch(ActionCreators.undo())

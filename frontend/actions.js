@@ -11,9 +11,9 @@ export function placePiece(x, y, color, ws) {
       Action: 'MOVE',
       Sender: 'client',
       Data: JSON.stringify({
-        x,
-        y,
-        color
+        X: x,
+        Y: y,
+        Color: color
       })
     }))
   }
@@ -21,6 +21,7 @@ export function placePiece(x, y, color, ws) {
 
 export function setPieces(pieces, currentTurn) {
   console.log('setting pieces')
+  console.log(pieces)
   return ({
     type: 'SET',
     pieces,
