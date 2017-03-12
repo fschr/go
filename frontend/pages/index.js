@@ -25,8 +25,8 @@ class Index extends Component {
 
     this._ws.addEventListener('open', e => {
       this._ws.send(JSON.stringify({
-        action: 'GET_CURRENT_STATE',
-        sender: 'client'
+        Action: 'GET_CURRENT_STATE',
+        Sender: 'client'
       }))
     })
 
@@ -35,10 +35,10 @@ class Index extends Component {
       console.log(data)
 
       if(data.sender !== 'client'){
-        switch(data.action) {
+        switch(data.Action) {
           case 'CURRENT_STATE':
             const serverData = JSON.parse(data.data)
-            this.props.dispatch(setPieces(serverData.pieces, "black"))
+            this.props.dispatch(setPieces(serverData.Pieces, "black"))
             break;
           case 'INVALID_MOVE':
             this.props.dispatch(ActionCreators.undo())
