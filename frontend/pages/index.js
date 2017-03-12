@@ -37,7 +37,7 @@ class Index extends Component {
       if(data.sender !== 'client'){
         switch(data.action) {
           case 'CURRENT_STATE':
-            this.props.dispatch(setPieces(data.pieces, data.currentTurn))
+            this.props.dispatch(setPieces(data.pieces, "black"))
             break;
           case 'INVALID_MOVE':
             this.props.dispatch(ActionCreators.undo())
