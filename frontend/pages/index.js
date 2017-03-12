@@ -40,7 +40,7 @@ class Index extends Component {
         switch(data.Action) {
           case 'CURRENT_STATE':
             const serverData = JSON.parse(data.Data)
-            this.props.dispatch(setPieces(_.mapKeys(serverData.Pieces, _.lowerCase), "black"))
+            this.props.dispatch(setPieces(serverData.Pieces.map(piece => _.mapKeys(piece, _.lowerCase)), "black"))
             break;
           case 'INVALID_MOVE':
             this.props.dispatch(ActionCreators.undo())
