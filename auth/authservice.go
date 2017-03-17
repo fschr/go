@@ -6,18 +6,17 @@ import (
 	"github.com/gorilla/handlers"
 	"os"
 	"gopkg.in/mgo.v2"
-	//"gopkg.in/mgo.v2/bson"
 	"./controllers"
 )
 
 func main() {
 	r := httprouter.New()
 
-	uc := controllers.NewUserController()
+	uc := controllers.NewUserController(getDBSession())
 
 	r.GET("/user/:id", uc.GetUser)
 	r.POST("/user", uc.CreateUser)
-	r.DELETE("/user/{id}", uc.DeleteUser)
+	r.DELETE("/user/:id", uc.DeleteUser)
 
 	http.ListenAndServe(":3000", handlers.LoggingHandler(os.Stdout, r))
 }
