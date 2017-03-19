@@ -11,19 +11,19 @@ import (
 )
 
 type (
-	UserController struct{
+	AuthController struct{
 		session *mgo.Session
 	}
 )
 
-func NewUserController(s *mgo.Session) *UserController {
-	return &UserController{s}
+func NewAuthController(s *mgo.Session) *AuthController {
+	return &AuthController{s}
 }
 
-func(uc UserController) GetUser(w  http.ResponseWriter, r *http.Request, p httprouter.Params){
+func(ac AuthController) GetUser(w  http.ResponseWriter, r *http.Request, p httprouter.Params){
 	id := p.ByName("id")
 	if !bson.IsObjectIdHex(id) {
-		w.WriteHeader(404)
+		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("User ID is invalid"))
 		return
 	}
@@ -31,8 +31,8 @@ func(uc UserController) GetUser(w  http.ResponseWriter, r *http.Request, p httpr
 	oid := bson.ObjectIdHex(id)
 	retrievedUser := models.User{}
 
-	if err := uc.session.DB("AuthService").C("users").FindId(oid).One(&retrievedUser); err != nil {
-		w.WriteHeader(404)
+	if err := ac.session.DB("AuthService").C("users").FindId(oid).One(&retrievedUser); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("User with given ID not found"))
 		return
 	}
@@ -45,7 +45,7 @@ func(uc UserController) GetUser(w  http.ResponseWriter, r *http.Request, p httpr
 }
 
 
-func(uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params){
+func(ac AuthController) CreateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params){
 	newUser := models.User{}
 
 	decoder := json.NewDecoder(r.Body)
@@ -57,7 +57,7 @@ func(uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, p htt
 	defer r.Body.Close()
 
 	newUser.Id = bson.NewObjectId()
-	uc.session.DB("AuthService").C("users").Insert(newUser) 
+	ac.session.DB("AuthService").C("users").Insert(newUser) 
 
 	payload, _ := json.Marshal(newUser)
 	w.Header().Set("Content-Type", "application/json")
@@ -65,17 +65,17 @@ func(uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, p htt
 	w.Write([]byte(payload))
 }
 
-func(uc UserController) DeleteUser(w http.ResponseWriter, r *http.Request, p httprouter.Params){
+func(ac AuthController) DeleteUser(w http.ResponseWriter, r *http.Request, p httprouter.Params){
 	id := p.ByName("id")
 	if !bson.IsObjectIdHex(id) {
-		w.WriteHeader(404)
+		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("User ID is invalid"))
 		return
 	}
 
 	oid := bson.ObjectIdHex(id)
-	if err := uc.session.DB("AuthService").C("users").RemoveId(oid); err != nil {
-		w.WriteHeader(404)
+	if err := ac.session.DB("AuthService").C("users").RemoveId(oid); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("User with given ID not found"))
 		return
 	}

@@ -12,7 +12,7 @@ import (
 func main() {
 	r := httprouter.New()
 
-	uc := controllers.NewUserController(getDBSession())
+	uc := controllers.NewAuthController(getDBSession())
 
 	r.GET("/user/:id", uc.GetUser)
 	r.POST("/user", uc.CreateUser)
