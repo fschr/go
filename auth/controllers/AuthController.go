@@ -47,7 +47,6 @@ func(ac AuthController) GetUser(w  http.ResponseWriter, r *http.Request, p httpr
 
 func(ac AuthController) CreateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params){
 	newUser := models.User{}
-
 	decoder := json.NewDecoder(r.Body)
 
 	err := decoder.Decode(&newUser)
@@ -56,14 +55,23 @@ func(ac AuthController) CreateUser(w http.ResponseWriter, r *http.Request, p htt
 	}
 	defer r.Body.Close()
 
+	//Check if username is already in use
+	existing := findUserByUsername(ac.session, newUser.Username)
+	if (models.User{}) != existing {
+		http.Error(w, "Email already exists", http.StatusBadRequest)
+		return
+	} 
+
 	newUser.Id = bson.NewObjectId()
 
+	//Validate the POST request
 	invalidUser := newUser.Validate()
 	if invalidUser != nil {
 		http.Error(w, invalidUser.Error(), http.StatusBadRequest)
 		return
 	}
 
+	//Insert new user into DB
 	ac.session.DB("AuthService").C("users").Insert(newUser) 
 
 	payload, _ := json.Marshal(newUser)
@@ -89,4 +97,13 @@ func(ac AuthController) DeleteUser(w http.ResponseWriter, r *http.Request, p htt
 
 	w.WriteHeader(200)
 	w.Write([]byte("User Deleted"))
+}
+
+func findUserByUsername(session *mgo.Session, username string) models.User {
+	result := models.User{}
+	err := session.DB("AuthService").C("users").Find(bson.M{"username":username}).One(&result)
+	if err != nil {
+		return models.User{}
+	}
+	return result
 }
