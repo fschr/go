@@ -57,6 +57,13 @@ func(ac AuthController) CreateUser(w http.ResponseWriter, r *http.Request, p htt
 	defer r.Body.Close()
 
 	newUser.Id = bson.NewObjectId()
+
+	invalidUser := newUser.Validate()
+	if invalidUser != nil {
+		http.Error(w, invalidUser.Error(), http.StatusBadRequest)
+		return
+	}
+
 	ac.session.DB("AuthService").C("users").Insert(newUser) 
 
 	payload, _ := json.Marshal(newUser)
