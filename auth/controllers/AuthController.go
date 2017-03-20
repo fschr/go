@@ -3,11 +3,13 @@ package controllers
 import (
 	"net/http"
 	"encoding/json"
-
-	"github.com/julienschmidt/httprouter"
+	"fmt"
+	
 	"gopkg.in/mgo.v2"
-	"../services"
+	"github.com/julienschmidt/httprouter"
 	"../models"
+	"../services/AuthService"
+	"../services/UserService"
 )
 
 type (
@@ -20,43 +22,29 @@ func NewAuthController(s *mgo.Session) *AuthController {
 	return &AuthController{s}
 }
 
-func(ac AuthController) GetUser(w  http.ResponseWriter, r *http.Request, p httprouter.Params){
-	id := p.ByName("id")
-	retrievedUser := services.FindUserById(ac.session, id)
-	if (models.User{}) == retrievedUser {
-		http.Error(w, "User with given id does not exist", http.StatusBadRequest)
+func(ac AuthController) Login(w  http.ResponseWriter, r *http.Request, p httprouter.Params){
+	requestBody := models.User{}
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&requestBody)
+	if err != nil {
+		panic(err)
+	}
+	defer r.Body.Close()
+
+	requestUser := UserService.FindUserByEmail(ac.session, requestBody.Username)
+	if (models.User{}) == requestUser {
+		http.Error(w, "User with given email does not exist", http.StatusBadRequest)
 		return
 	}
 
-	payload, _ := json.Marshal(retrievedUser)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	w.Write([]byte(payload))
-}
-
-
-func(ac AuthController) CreateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params){
-	newUser, err := services.CreateUser(ac.session, r)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	} 
-
-	payload, _ := json.Marshal(newUser)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
-	w.Write([]byte(payload))
-}
-
-func(ac AuthController) DeleteUser(w http.ResponseWriter, r *http.Request, p httprouter.Params){
-	id := p.ByName("id")
-	err := services.DeleteUserById(ac.session, id)
+	token, err := AuthService.IssueToken(&requestUser, requestBody.Password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	fmt.Println([]byte(token))
 
 	w.WriteHeader(200)
-	w.Write([]byte("User Deleted"))
+	w.Write([]byte(token))
 }

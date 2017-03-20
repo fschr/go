@@ -12,11 +12,13 @@ import (
 func main() {
 	r := httprouter.New()
 
-	uc := controllers.NewAuthController(getDBSession())
+	uc := controllers.NewUserController(getDBSession())
+	ac := controllers.NewAuthController(getDBSession())
 
 	r.GET("/user/:id", uc.GetUser)
 	r.POST("/user", uc.CreateUser)
 	r.DELETE("/user/:id", uc.DeleteUser)
+	r.POST("/login", ac.Login)
 
 	http.ListenAndServe(":3000", handlers.LoggingHandler(os.Stdout, r))
 }

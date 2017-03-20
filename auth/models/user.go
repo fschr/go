@@ -18,7 +18,7 @@ func (u *User) Validate() error {
 	if !govalidator.IsEmail(u.Username) {
 		return errors.New("Invalid email")
 	}
-	if len(u.Password) <= 0 || len(u.Password) > 255{
+	if len(u.Username) <= 0 || len(u.Username) > 255{
 		return errors.New("Username length invalid")
 	}
 	if !govalidator.IsAlphanumeric(u.Password) {
@@ -28,4 +28,8 @@ func (u *User) Validate() error {
 		return errors.New("Password length invalid")
 	}
 	return nil
+}
+
+func (u *User) VerifyPassword(password string) bool {
+	return u.Password == password
 }

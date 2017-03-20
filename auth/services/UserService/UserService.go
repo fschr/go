@@ -1,11 +1,11 @@
-package services
+package UserService
 
 import (
 	"net/http"
 	"errors"
 	"encoding/json"
 
-	"../models"
+	"../../models"
 	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/mgo.v2"
 )
@@ -24,7 +24,7 @@ func FindUserById(session *mgo.Session, id string) models.User {
 	return retrievedUser
 }
 
-func FindUserByUsername(session *mgo.Session, username string) models.User {
+func FindUserByEmail(session *mgo.Session, username string) models.User {
 	result := models.User{}
 	err := session.DB("AuthService").C("users").Find(bson.M{"username":username}).One(&result)
 	if err != nil {
@@ -44,7 +44,7 @@ func CreateUser(session *mgo.Session, r *http.Request) (models.User, error) {
 	defer r.Body.Close()
 
 	//Check if username is already in use
-	existing := FindUserByUsername(session, newUser.Username)
+	existing := FindUserByEmail(session, newUser.Username)
 	if (models.User{}) != existing {
 		return newUser, errors.New("User with given email already exists")
 	} 
