@@ -5,24 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	
-	"gopkg.in/mgo.v2"
-	"github.com/julienschmidt/httprouter"
 	"../models"
 	"../services/AuthService"
-	"../services/UserService"
+	"../core"
 )
 
-type (
-	AuthController struct{
-		session *mgo.Session
-	}
-)
-
-func NewAuthController(s *mgo.Session) *AuthController {
-	return &AuthController{s}
-}
-
-func(ac AuthController) Login(w  http.ResponseWriter, r *http.Request, p httprouter.Params){
+var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 	requestBody := models.User{}
 
 	decoder := json.NewDecoder(r.Body)
@@ -32,7 +20,7 @@ func(ac AuthController) Login(w  http.ResponseWriter, r *http.Request, p httprou
 	}
 	defer r.Body.Close()
 
-	requestUser := UserService.FindUserByEmail(ac.session, requestBody.Username)
+	requestUser := core.InitDataBase().FindUserByEmail(requestBody.Username)
 	if (models.User{}) == requestUser {
 		http.Error(w, "User with given email does not exist", http.StatusBadRequest)
 		return
@@ -47,4 +35,4 @@ func(ac AuthController) Login(w  http.ResponseWriter, r *http.Request, p httprou
 
 	w.WriteHeader(200)
 	w.Write([]byte(token))
-}
+})

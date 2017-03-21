@@ -4,25 +4,16 @@ import (
 	"net/http"
 	"encoding/json"
 
-	"github.com/julienschmidt/httprouter"
-	"gopkg.in/mgo.v2"
+	"github.com/gorilla/mux"
 	"../services/UserService"
 	"../models"
+	"../core"
 )
 
-type (
-	UserController struct{
-		session *mgo.Session
-	}
-)
-
-func NewUserController(s *mgo.Session) *UserController {
-	return &UserController{s}
-}
-
-func(uc UserController) GetUser(w  http.ResponseWriter, r *http.Request, p httprouter.Params){
-	id := p.ByName("id")
-	retrievedUser := UserService.FindUserById(uc.session, id)
+var GetUser = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
+	vars := mux.Vars(r)
+	id,_ := vars["id"]
+	retrievedUser := core.InitDataBase().FindUserById(id)
 	if (models.User{}) == retrievedUser {
 		http.Error(w, "User with given id does not exist", http.StatusBadRequest)
 		return
@@ -33,11 +24,11 @@ func(uc UserController) GetUser(w  http.ResponseWriter, r *http.Request, p httpr
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	w.Write([]byte(payload))
-}
+})
 
 
-func(uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, p httprouter.Params){
-	newUser, err := UserService.CreateUser(uc.session, r)
+var CreateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+	newUser, err := UserService.CreateUser(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -47,11 +38,12 @@ func(uc UserController) CreateUser(w http.ResponseWriter, r *http.Request, p htt
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
 	w.Write([]byte(payload))
-}
+})
 
-func(uc UserController) DeleteUser(w http.ResponseWriter, r *http.Request, p httprouter.Params){
-	id := p.ByName("id")
-	err := UserService.DeleteUserById(uc.session, id)
+var DeleteUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+	vars := mux.Vars(r)
+	id,_ := vars["id"]
+	err := UserService.DeleteUserById(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -59,4 +51,4 @@ func(uc UserController) DeleteUser(w http.ResponseWriter, r *http.Request, p htt
 
 	w.WriteHeader(200)
 	w.Write([]byte("User Deleted"))
-}
+})
