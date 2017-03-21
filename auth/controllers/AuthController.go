@@ -3,7 +3,6 @@ package controllers
 import (
 	"net/http"
 	"encoding/json"
-	"fmt"
 	
 	"../models"
 	"../services/AuthService"
@@ -31,7 +30,6 @@ var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Println([]byte(token))
 
 	w.WriteHeader(200)
 	w.Write([]byte(token))

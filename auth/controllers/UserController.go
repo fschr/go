@@ -5,15 +5,18 @@ import (
 	"encoding/json"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/context"
+	jwt "github.com/dgrijalva/jwt-go"
 	"../services/UserService"
 	"../models"
 	"../core"
 )
 
 var GetUser = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
-	vars := mux.Vars(r)
-	id,_ := vars["id"]
-	retrievedUser := core.InitDataBase().FindUserById(id)
+	user := context.Get(r, "user")
+	username := user.(*jwt.Token).Claims.(jwt.MapClaims)["username"]
+
+	retrievedUser := core.InitDataBase().FindUserByEmail(username.(string))
 	if (models.User{}) == retrievedUser {
 		http.Error(w, "User with given id does not exist", http.StatusBadRequest)
 		return

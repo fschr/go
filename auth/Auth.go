@@ -13,10 +13,10 @@ import (
 func main() {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/user/{id}", controllers.GetUser).Methods("GET")
-	r.HandleFunc("/user", controllers.CreateUser).Methods("POST")
-	r.HandleFunc("/user/:id", controllers.DeleteUser).Methods("DELETE")
-	r.HandleFunc("/login", controllers.Login).Methods("POST")
+	r.Handle("/user/", jwtMiddleware.Handler(controllers.GetUser)).Methods("GET")
+	r.Handle("/user", jwtMiddleware.Handler(controllers.CreateUser)).Methods("POST")
+	r.Handle("/user/{id}", controllers.DeleteUser).Methods("DELETE")
+	r.Handle("/login", controllers.Login).Methods("POST")
 
 	http.ListenAndServe(":3000", handlers.LoggingHandler(os.Stdout, r))
 }
