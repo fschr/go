@@ -3,11 +3,11 @@ package main
 import (
 	"net/http"
 	"os"
-	"./controllers"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
 	"github.com/auth0/go-jwt-middleware"
+	"github.com/fschr/go/auth/controllers"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 

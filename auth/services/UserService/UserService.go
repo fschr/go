@@ -5,10 +5,10 @@ import (
 	"errors"
 	"encoding/json"
 
-	"../../models"
-	"../../core"
 	"gopkg.in/mgo.v2/bson"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/fschr/go/auth/models"
+	"github.com/fschr/go/auth/core"
 )
 
 var DB = core.InitDataBase()

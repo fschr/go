@@ -1,6 +1,6 @@
 package controllers
 
-import "../core"
+import "github.com/fschr/go/auth/core"
 
 var DataBase *core.DataBase = nil
 

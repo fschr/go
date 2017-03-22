@@ -1,10 +1,11 @@
 package core
 
 import (
+	"errors"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"../models"
-	"errors"
+	"github.com/fschr/go/auth/models"
 )
 
 type (

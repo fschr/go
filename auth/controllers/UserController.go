@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"encoding/json"
 
+	"github.com/fschr/go/auth/services/UserService"
+	"github.com/fschr/go/auth/services/AuthService"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/context"
 	jwt "github.com/dgrijalva/jwt-go"
-	"../services/UserService"
-	"../services/AuthService"
 )
 
 var GetUser = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){

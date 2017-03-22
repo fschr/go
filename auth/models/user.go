@@ -1,10 +1,11 @@
 package models
 
 import (
-	"gopkg.in/mgo.v2/bson"
-	"github.com/asaskevich/govalidator"
 	"errors"
+
+	"gopkg.in/mgo.v2/bson"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/asaskevich/govalidator"
 )
 
 type User struct {

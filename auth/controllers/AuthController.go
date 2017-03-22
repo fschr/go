@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"encoding/json"
 	
-	"../models"
-	"../services/AuthService"
+	"github.com/fschr/go/auth/models"
+	"github.com/fschr/go/auth/services/AuthService"
 )
 
 var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){

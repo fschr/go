@@ -1,9 +1,10 @@
 package AuthService
 
 import (
-	"../../models"
 	"time"
 	"errors"
+
+	"github.com/fschr/go/auth/models"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
