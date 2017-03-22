@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/auth0/go-jwt-middleware"
 	"github.com/fschr/go/auth/controllers"
+	"github.com/fschr/go/auth/config"
 	jwt "github.com/dgrijalva/jwt-go"
 )
 
@@ -19,7 +20,8 @@ func main() {
 	r.Handle("/user/{id}", controllers.DeleteUser).Methods("DELETE")
 	r.Handle("/login", controllers.Login).Methods("POST")
 
-	http.ListenAndServe(":5000", handlers.LoggingHandler(os.Stdout, r))
+	mConfig := config.DevConfig
+	http.ListenAndServe(mConfig.Env.Port, handlers.LoggingHandler(os.Stdout, r))
 }
 
 var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{

@@ -16,7 +16,7 @@ var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 	err := decoder.Decode(&requestBody)
 	if err != nil {
 		log.Error(err)
-		http.Error(w, "RequestParseError", http.StatusBadRequest)
+		http.Error(w, "RequestParseError", http.StatusInternalServerError)
 		return
 	}
 	defer r.Body.Close()

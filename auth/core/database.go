@@ -6,6 +6,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"github.com/fschr/go/auth/models"
+	"github.com/fschr/go/auth/config"
 )
 
 type (
@@ -24,7 +25,8 @@ func InitDataBase() *DataBase {
 }
 
 func getDBSession() *mgo.Session {
-	s, err := mgo.Dial("mongodb://localhost")
+	mConfig := config.DevConfig
+	s, err := mgo.Dial(mConfig.DB.Host)
 
 	if err != nil {
 		panic(err)
