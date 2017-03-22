@@ -8,6 +8,7 @@ import (
 	"../../models"
 	"../../core"
 	"gopkg.in/mgo.v2/bson"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var DB = core.InitDataBase()
@@ -35,6 +36,13 @@ func CreateUser(r *http.Request) (models.User, error) {
 	if invalidUser != nil {
 		return newUser, invalidUser
 	}
+
+	//Hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
+    if err != nil {
+        panic(err)
+    }
+    newUser.Password = string(hashedPassword)
 
 	//Insert new user into DB
 	DB.InsertUser(&newUser)

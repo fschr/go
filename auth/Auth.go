@@ -14,7 +14,7 @@ func main() {
 	r := mux.NewRouter()
 
 	r.Handle("/user/", jwtMiddleware.Handler(controllers.GetUser)).Methods("GET")
-	r.Handle("/user", jwtMiddleware.Handler(controllers.CreateUser)).Methods("POST")
+	r.Handle("/user", controllers.CreateUser).Methods("POST")
 	r.Handle("/user/{id}", controllers.DeleteUser).Methods("DELETE")
 	r.Handle("/login", controllers.Login).Methods("POST")
 

@@ -4,6 +4,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"github.com/asaskevich/govalidator"
 	"errors"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type (
@@ -31,5 +32,6 @@ func (u *User) Validate() error {
 }
 
 func (u *User) VerifyPassword(password string) bool {
-	return u.Password == password
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	return err == nil
 }
