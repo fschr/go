@@ -31,29 +31,22 @@ func getDBSession() *mgo.Session {
 	return s
 }
 
-func(ds *DataBase) FindUserById(id string) (models.User, error) {
+func(ds *DataBase) FindUserById(id string) (retrievedUser models.User, err error) {
 	session := ds.Session
-	retrievedUser := models.User{}
 
 	if !bson.IsObjectIdHex(id) {
-		return models.User{}, errors.New("Invalid user id")
+		return retrievedUser, errors.New("Invalid user id")
 	}
 
 	oid := bson.ObjectIdHex(id)
-	if err := session.DB("AuthService").C("users").FindId(oid).One(&retrievedUser); err != nil{
-		return models.User{}, err
-	}
-	return retrievedUser, nil
+	err = session.DB("AuthService").C("users").FindId(oid).One(&retrievedUser)
+	return retrievedUser, err
 }
 
-func(ds *DataBase) FindUserByEmail(username string) (models.User, error) {
+func(ds *DataBase) FindUserByEmail(username string) (result models.User, err error) {
 	session := ds.Session
-	result := models.User{}
-	err := session.DB("AuthService").C("users").Find(bson.M{"username":username}).One(&result)
-	if err != nil {
-		return models.User{}, err
-	}
-	return result, nil
+	err = session.DB("AuthService").C("users").Find(bson.M{"username":username}).One(&result)
+	return result, err
 }
 
 func(ds *DataBase) InsertUser(newUser *models.User) error {

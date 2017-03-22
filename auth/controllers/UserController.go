@@ -9,14 +9,13 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"../services/UserService"
 	"../services/AuthService"
-	"../core"
 )
 
 var GetUser = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 	user := context.Get(r, "user")
 	username := user.(*jwt.Token).Claims.(jwt.MapClaims)["username"]
 
-	retrievedUser, err := core.InitDataBase().FindUserByEmail(username.(string))
+	retrievedUser, err := DataBase.FindUserByEmail(username.(string))
 	if err != nil {
 		http.Error(w, "User with given id does not exist", http.StatusBadRequest)
 		return
@@ -26,7 +25,10 @@ var GetUser = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
-	w.Write([]byte(payload))
+	_, err = w.Write([]byte(payload))
+	if err != nil {
+		http.Error(w, "Error in retrieving user", http.StatusBadRequest)
+	}
 })
 
 
@@ -39,12 +41,15 @@ var CreateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
 
 	token, err := AuthService.GenerateJWTToken(newUser.Username)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Error in creating token", http.StatusBadRequest)
 		return
 	}
 
 	w.WriteHeader(200)
-	w.Write([]byte(token))
+	_, err = w.Write([]byte(token))
+	if err != nil {
+		http.Error(w, "Error in creating token", http.StatusBadRequest)
+	}
 })
 
 var DeleteUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
@@ -52,10 +57,13 @@ var DeleteUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
 	id,_ := vars["id"]
 	err := UserService.DeleteUserById(id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Error in deleting user", http.StatusBadRequest)
 		return
 	}
 
 	w.WriteHeader(200)
-	w.Write([]byte("User Deleted"))
+	_, err = w.Write([]byte("User Deleted"))
+	if err != nil {
+		http.Error(w, "Error in deleting user", http.StatusBadRequest)
+	}
 })

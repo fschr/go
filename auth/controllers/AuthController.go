@@ -6,7 +6,6 @@ import (
 	
 	"../models"
 	"../services/AuthService"
-	"../core"
 )
 
 var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
@@ -15,11 +14,12 @@ var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&requestBody)
 	if err != nil {
-		panic(err)
+		http.Error(w, "Error Parsing JSON", http.StatusBadRequest)
+		return
 	}
 	defer r.Body.Close()
 
-	requestUser, err := core.InitDataBase().FindUserByEmail(requestBody.Username)
+	requestUser, err := DataBase.FindUserByEmail(requestBody.Username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -32,5 +32,8 @@ var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 	}
 
 	w.WriteHeader(200)
-	w.Write([]byte(token))
+	_, err = w.Write([]byte(token))
+	if err != nil {
+		http.Error(w, "Error in logging in", http.StatusBadRequest)
+	}
 })

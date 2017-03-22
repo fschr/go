@@ -7,13 +7,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type (
-	User struct {
-		Id 	 bson.ObjectId	`json:"id" bson:"_id"` 
-		Username string		`json:"username" bson:"username"`
-		Password string		`json:"password" bson:"password"`
-	}
-)
+type User struct {
+	Id 	 bson.ObjectId	`json:"id" bson:"_id"` 
+	Username string		`json:"username" bson:"username"`
+	Password string		`json:"password" bson:"password"`
+}
+
 
 func (u *User) Validate() error {
 	if !govalidator.IsEmail(u.Username) {

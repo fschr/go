@@ -13,13 +13,12 @@ import (
 
 var DB = core.InitDataBase()
 
-func CreateUser(r *http.Request) (models.User, error) {
-	newUser := models.User{}
-
+func CreateUser(r *http.Request) (newUser models.User, err error) {
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&newUser)
+	err = decoder.Decode(&newUser)
 	if err != nil {
 		panic(err)
+		return newUser, err
 	}
 	defer r.Body.Close()
 
@@ -39,17 +38,14 @@ func CreateUser(r *http.Request) (models.User, error) {
 
 	//Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
-    if err != nil {
-        panic(err)
+	if err != nil {
+   	    panic(err)
     }
     newUser.Password = string(hashedPassword)
 
 	//Insert new user into DB
 	err = DB.InsertUser(&newUser)
-	if err != nil {
-		return newUser, err
-	}
-	return newUser, nil
+	return newUser, err
 }
 
 func DeleteUserById(id string) error{

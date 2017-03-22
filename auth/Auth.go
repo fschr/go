@@ -2,12 +2,13 @@ package main
 
 import (
 	"net/http"
+	"os"
+	"./controllers"
+
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
 	"github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
-	"os"
-	"./controllers"
 )
 
 func main() {

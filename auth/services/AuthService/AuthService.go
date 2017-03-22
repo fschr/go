@@ -11,30 +11,24 @@ var (
 	SecretKey = []byte("MasterOfNone")
 )
 
-func IssueToken(requestUser *models.User, password string) (string, error) {
+func IssueToken(requestUser *models.User, password string) (newToken string, err error) {
 	if requestUser.VerifyPassword(password) {
-		newToken, err := GenerateJWTToken(requestUser.Username)
-		if err != nil {
-			return "", err
-		}
-		return newToken, nil
+		newToken, err = GenerateJWTToken(requestUser.Username)
 	}else{
-		return "", errors.New("Invalid password")
+		err = errors.New("Invalid password")
 	}
+	return newToken, err
 }
 
-func GenerateJWTToken(email string) (string, error) {
+func GenerateJWTToken(email string) (tokenString string, err error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := make(jwt.MapClaims)
 	claims["exp"] = time.Now().Add(time.Hour * time.Duration(72)).Unix()
 	claims["username"] = email
 	token.Claims = claims
-	tokenString, err := token.SignedString(SecretKey)
-	if err != nil {
-		panic(err)
-		return "", err
-	}
-	return tokenString, nil
+	
+	tokenString, err = token.SignedString(SecretKey)
+	return tokenString, err
 }
 
 func VerifyToken(tokenString string) bool {
