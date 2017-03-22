@@ -19,7 +19,7 @@ func main() {
 	r.Handle("/user/{id}", controllers.DeleteUser).Methods("DELETE")
 	r.Handle("/login", controllers.Login).Methods("POST")
 
-	http.ListenAndServe(":3000", handlers.LoggingHandler(os.Stdout, r))
+	http.ListenAndServe(":5000", handlers.LoggingHandler(os.Stdout, r))
 }
 
 var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{

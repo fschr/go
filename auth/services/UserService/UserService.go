@@ -1,14 +1,14 @@
 package UserService
 
 import (
-	"net/http"
-	"errors"
 	"encoding/json"
+	"errors"
+	"net/http"
 
-	"gopkg.in/mgo.v2/bson"
-	"golang.org/x/crypto/bcrypt"
-	"github.com/fschr/go/auth/models"
 	"github.com/fschr/go/auth/core"
+	"github.com/fschr/go/auth/models"
+	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/mgo.v2/bson"
 )
 
 var DB = core.InitDataBase()
@@ -26,7 +26,7 @@ func CreateUser(r *http.Request) (newUser models.User, err error) {
 	_, err = DB.FindUserByEmail(newUser.Username)
 	if err == nil {
 		return newUser, errors.New("User with given email already exists")
-	} 
+	}
 
 	newUser.Id = bson.NewObjectId()
 
@@ -39,16 +39,16 @@ func CreateUser(r *http.Request) (newUser models.User, err error) {
 	//Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), bcrypt.DefaultCost)
 	if err != nil {
-   	    panic(err)
-    }
-    newUser.Password = string(hashedPassword)
+		panic(err)
+	}
+	newUser.Password = string(hashedPassword)
 
 	//Insert new user into DB
 	err = DB.InsertUser(&newUser)
 	return newUser, err
 }
 
-func DeleteUserById(id string) error{
+func DeleteUserById(id string) error {
 	if !bson.IsObjectIdHex(id) {
 		return errors.New("Invalid User ID")
 	}
