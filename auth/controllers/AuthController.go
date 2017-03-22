@@ -16,7 +16,7 @@ var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 	err := decoder.Decode(&requestBody)
 	if err != nil {
 		log.Error(err)
-		http.Error(w, "Error Parsing JSON", http.StatusBadRequest)
+		http.Error(w, "RequestParseError", http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
@@ -24,14 +24,14 @@ var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 	requestUser, err := DataBase.FindUserByEmail(requestBody.Username)
 	if err != nil {
 		log.Error(err)
-		http.Error(w, "Unable to find user with given email", http.StatusBadRequest)
+		http.Error(w, "InvalidUserError", http.StatusBadRequest)
 		return
 	}
 
 	token, err := AuthService.IssueToken(&requestUser, requestBody.Password)
 	if err != nil {
 		log.Error(err)
-		http.Error(w, "Unable to generate auth token", http.StatusBadRequest)
+		http.Error(w, "TokenCreationError", http.StatusBadRequest)
 		return
 	}
 
@@ -39,6 +39,6 @@ var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 	_, err = w.Write([]byte(token))
 	if err != nil {
 		log.Error(err)
-		http.Error(w, "Error logging in", http.StatusInternalServerError)
+		http.Error(w, "ResponseError", http.StatusInternalServerError)
 	}
 })
