@@ -19,7 +19,7 @@ var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 	}
 	defer r.Body.Close()
 
-	requestUser := core.InitDataBase().FindUserByEmail(requestBody.Username)
+	requestUser, err := core.InitDataBase().FindUserByEmail(requestBody.Username)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

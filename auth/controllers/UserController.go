@@ -9,7 +9,6 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"../services/UserService"
 	"../services/AuthService"
-	"../models"
 	"../core"
 )
 
@@ -17,8 +16,8 @@ var GetUser = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 	user := context.Get(r, "user")
 	username := user.(*jwt.Token).Claims.(jwt.MapClaims)["username"]
 
-	retrievedUser := core.InitDataBase().FindUserByEmail(username.(string))
-	if (models.User{}) == retrievedUser {
+	retrievedUser, err := core.InitDataBase().FindUserByEmail(username.(string))
+	if err != nil {
 		http.Error(w, "User with given id does not exist", http.StatusBadRequest)
 		return
 	}

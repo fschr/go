@@ -24,8 +24,8 @@ func CreateUser(r *http.Request) (models.User, error) {
 	defer r.Body.Close()
 
 	//Check if username is already in use
-	existing := DB.FindUserByEmail(newUser.Username)
-	if (models.User{}) != existing {
+	_, err = DB.FindUserByEmail(newUser.Username)
+	if err == nil {
 		return newUser, errors.New("User with given email already exists")
 	} 
 
@@ -45,7 +45,10 @@ func CreateUser(r *http.Request) (models.User, error) {
     newUser.Password = string(hashedPassword)
 
 	//Insert new user into DB
-	DB.InsertUser(&newUser)
+	err = DB.InsertUser(&newUser)
+	if err != nil {
+		return newUser, err
+	}
 	return newUser, nil
 }
 
@@ -54,6 +57,6 @@ func DeleteUserById(id string) error{
 		return errors.New("Invalid User ID")
 	}
 
-	DB.DeleteUser(id)
-	return nil
+	err := DB.DeleteUser(id)
+	return err
 }
