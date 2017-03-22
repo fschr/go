@@ -20,8 +20,8 @@ var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 	defer r.Body.Close()
 
 	requestUser := core.InitDataBase().FindUserByEmail(requestBody.Username)
-	if (models.User{}) == requestUser {
-		http.Error(w, "User with given email does not exist", http.StatusBadRequest)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

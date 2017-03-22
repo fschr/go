@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/context"
 	jwt "github.com/dgrijalva/jwt-go"
 	"../services/UserService"
+	"../services/AuthService"
 	"../models"
 	"../core"
 )
@@ -37,10 +38,14 @@ var CreateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
 		return
 	} 
 
-	payload, _ := json.Marshal(newUser)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(201)
-	w.Write([]byte(payload))
+	token, err := AuthService.GenerateJWTToken(newUser.Username)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write([]byte(token))
 })
 
 var DeleteUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
