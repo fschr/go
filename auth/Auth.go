@@ -4,12 +4,12 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gorilla/mux"
-	"github.com/gorilla/handlers"
 	"github.com/auth0/go-jwt-middleware"
-	"github.com/fschr/go/auth/controllers"
-	"github.com/fschr/go/auth/config"
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/fschr/go/auth/config"
+	"github.com/fschr/go/auth/controllers"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 )
 
 func main() {
@@ -25,8 +25,8 @@ func main() {
 }
 
 var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
-  ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-    return []byte("MasterOfNone"), nil
-  },
-  SigningMethod: jwt.SigningMethodHS256,
+	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+		return []byte("MasterOfNone"), nil
+	},
+	SigningMethod: jwt.SigningMethodHS256,
 })

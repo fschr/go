@@ -1,18 +1,18 @@
 package controllers
 
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
 
-	"github.com/fschr/go/auth/services/UserService"
-	"github.com/fschr/go/auth/services/AuthService"
-	"github.com/gorilla/mux"
-	"github.com/gorilla/context"
-	jwt "github.com/dgrijalva/jwt-go"
 	log "github.com/Sirupsen/logrus"
+	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/fschr/go/auth/services/AuthService"
+	"github.com/fschr/go/auth/services/UserService"
+	"github.com/gorilla/context"
+	"github.com/gorilla/mux"
 )
 
-var GetUser = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
+var GetUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	user := context.Get(r, "user")
 	username := user.(*jwt.Token).Claims.(jwt.MapClaims)["username"]
 
@@ -34,14 +34,13 @@ var GetUser = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
 	}
 })
 
-
-var CreateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+var CreateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	newUser, creationErr := UserService.CreateUser(r)
 	if creationErr != nil {
 		log.Error(creationErr)
 		http.Error(w, creationErr.Error(), http.StatusBadRequest)
 		return
-	} 
+	}
 
 	token, err := AuthService.GenerateJWTToken(newUser.Username)
 	if err != nil {
@@ -58,9 +57,9 @@ var CreateUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
 	}
 })
 
-var DeleteUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+var DeleteUser = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id,_ := vars["id"]
+	id, _ := vars["id"]
 	err := UserService.DeleteUserById(id)
 	if err != nil {
 		log.Error(err)

@@ -3,14 +3,14 @@ package core
 import (
 	"errors"
 
+	"github.com/fschr/go/auth/config"
+	"github.com/fschr/go/auth/models"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"github.com/fschr/go/auth/models"
-	"github.com/fschr/go/auth/config"
 )
 
 type (
-	DataBase struct{
+	DataBase struct {
 		Session *mgo.Session
 	}
 )
@@ -34,7 +34,7 @@ func getDBSession() *mgo.Session {
 	return s
 }
 
-func(ds *DataBase) FindUserById(id string) (retrievedUser models.User, err error) {
+func (ds *DataBase) FindUserById(id string) (retrievedUser models.User, err error) {
 	session := ds.Session
 
 	if !bson.IsObjectIdHex(id) {
@@ -46,17 +46,17 @@ func(ds *DataBase) FindUserById(id string) (retrievedUser models.User, err error
 	return retrievedUser, err
 }
 
-func(ds *DataBase) FindUserByEmail(username string) (result models.User, err error) {
+func (ds *DataBase) FindUserByEmail(username string) (result models.User, err error) {
 	session := ds.Session
-	err = session.DB("AuthService").C("users").Find(bson.M{"username":username}).One(&result)
+	err = session.DB("AuthService").C("users").Find(bson.M{"username": username}).One(&result)
 	return result, err
 }
 
-func(ds *DataBase) InsertUser(newUser *models.User) error {
-	return ds.Session.DB("AuthService").C("users").Insert(newUser) 
+func (ds *DataBase) InsertUser(newUser *models.User) error {
+	return ds.Session.DB("AuthService").C("users").Insert(newUser)
 }
 
-func(ds *DataBase) DeleteUser(id string) error {
+func (ds *DataBase) DeleteUser(id string) error {
 	oid := bson.ObjectIdHex(id)
 	return ds.Session.DB("AuthService").C("users").RemoveId(oid)
 }

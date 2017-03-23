@@ -9,6 +9,7 @@ import (
 type position uint32
 
 type color string
+
 const (
 	black color = "black"
 	white color = "white"
@@ -27,15 +28,16 @@ type Board struct {
 type actionType string
 
 type sender string
+
 const (
 	client sender = "client"
 	server sender = "server"
 )
 
 type Message struct {
-	Action     actionType // action type
-	Sender     sender     // who sent the message
-	Data       string     // JSON string
+	Action actionType // action type
+	Sender sender     // who sent the message
+	Data   string     // JSON string
 }
 
 func copyBoard(b *Board) *Board {
@@ -94,7 +96,7 @@ func Reduce(b *Board, m *Message) (newBoard *Board, retMsg *Message) {
 		retMsg.Action = "INVALID_ACTION"
 		retMsg.Data = "error: invalid action type"
 		log.WithFields(log.Fields{
-			"board": b,
+			"board":   b,
 			"message": m,
 		}).Warn("invalid action type")
 		newBoard = copyBoard(b)
