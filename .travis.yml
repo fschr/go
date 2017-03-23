@@ -1,6 +1,6 @@
 {
   "language": "go",
-  "go": "1.7.x",
+  "go": "1.8.x",
   "script": "./test.sh",
   "group": "stable",
   "dist": "precise",
