@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	"net/http"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/fschr/go/engine"
 	"github.com/gorilla/websocket"
-	log "github.com/Sirupsen/logrus"
 )
 
 const (
-	ServerErr = "500: server error"
+	ServerErr     = "500: server error"
 	BadRequestErr = "400: malformed message"
 )
 
@@ -30,7 +30,7 @@ func NewServer(port string) *Server {
 }
 
 func (s *Server) Run() {
-	http.HandleFunc("/websocket/v1", func (w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/websocket/v1", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			log.Warn(err)
@@ -61,7 +61,7 @@ func (s *Server) Run() {
 			}).Info("received message")
 			var lastBoard *engine.Board = nil
 			if len(s.state) > 0 {
-				lastBoard = &s.state[len(s.state) - 1]
+				lastBoard = &s.state[len(s.state)-1]
 			}
 			newState, retMsg := engine.Reduce(lastBoard, &m)
 			s.state = append(s.state, *newState)

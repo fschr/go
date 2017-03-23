@@ -1,15 +1,15 @@
 package controllers
 
 import (
-	"net/http"
 	"encoding/json"
-	
+	"net/http"
+
+	log "github.com/Sirupsen/logrus"
 	"github.com/fschr/go/auth/models"
 	"github.com/fschr/go/auth/services/AuthService"
-	log "github.com/Sirupsen/logrus"
 )
 
-var Login = http.HandlerFunc(func(w  http.ResponseWriter, r *http.Request){
+var Login = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	requestBody := models.User{}
 
 	decoder := json.NewDecoder(r.Body)
